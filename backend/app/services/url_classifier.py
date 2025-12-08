@@ -93,10 +93,14 @@ def predict(text: str) -> dict:
         - url_score: float [0.0-1.0] (0=safe, 1=high risk)
         - domains: list of domain names found
         - risk_factors: list of identified risk factors
+        - classification: "safe" or "malicious"
+        - confidence: float [0.0-1.0]
     """
     if not text:
         return {
             "url_detected": False,
+            "classification": "safe",
+            "confidence": 0.95,
             "url_score": 0.0,
             "domains": [],
             "risk_factors": []
@@ -108,6 +112,8 @@ def predict(text: str) -> dict:
     if not urls:
         return {
             "url_detected": False,
+            "classification": "safe",
+            "confidence": 0.95,
             "url_score": 0.0,
             "domains": [],
             "risk_factors": []
@@ -179,8 +185,18 @@ def predict(text: str) -> dict:
     # Average risk across all URLs
     avg_risk_score = min(1.0, total_risk_score / len(urls)) if urls else 0.0
     
+    # Classify as malicious or safe based on risk score
+    if avg_risk_score >= 0.5:
+        classification = "malicious"
+        confidence = min(0.95, 0.5 + (avg_risk_score * 0.5))
+    else:
+        classification = "safe"
+        confidence = min(0.95, 0.5 + ((1.0 - avg_risk_score) * 0.5))
+    
     return {
         "url_detected": True,
+        "classification": classification,
+        "confidence": float(confidence),
         "url_score": float(avg_risk_score),
         "domains": list(set(domains)),  # Remove duplicates
         "risk_factors": risk_factors

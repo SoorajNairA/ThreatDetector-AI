@@ -219,20 +219,118 @@ def predict(text: str) -> dict:
             print("  Falling back to stub implementation.")
     
     # ========================================================================
-    # INFERENCE PATH 2: Stub Implementation (Fallback)
+    # INFERENCE PATH 2: Enhanced Heuristic Fallback
     # ========================================================================
-    # Simple heuristic based on text features (for development/testing)
-    words = text.lower().split()
-    word_count = len(words)
-    unique_words = len(set(words))
-    diversity = unique_words / (word_count + 1)
+    # Comprehensive heuristic based on multiple text features
     
-    # Heuristic: higher diversity & longer text → more human-like
-    ai_confidence = max(0.0, min(1.0, 0.5 - (diversity * 0.3) - (word_count / 100) * 0.2))
+    import re
+    from collections import Counter
+    
+    ai_score = 0.0
+    human_score = 0.0
+    
+    # 1. Check for common AI phrases (strong signal)
+    ai_phrases = [
+        r'it is important to note', r'it is worth noting', r'in conclusion',
+        r'in summary', r'furthermore', r'moreover', r'nevertheless',
+        r'therefore', r'thus', r'hence', r'aforementioned',
+        r'various factors', r'numerous', r'utilize', r'facilitate',
+        r'demonstrate', r'illustrate', r'emphasize', r'it should be noted',
+        r'one must consider', r'this approach', r'these findings',
+        r'the data suggests', r'comprehensive', r'particular'
+    ]
+    
+    text_lower = text.lower()
+    ai_phrase_count = sum(1 for phrase in ai_phrases if re.search(phrase, text_lower))
+    if ai_phrase_count >= 2:
+        ai_score += 0.4
+    elif ai_phrase_count == 1:
+        ai_score += 0.2
+    
+    # 2. Check for human expressions (strong signal)
+    human_expressions = [
+        r'\blol\b', r'\bomg\b', r'\bwtf\b', r'\blmao\b',
+        r'\byeah\b', r'\bnah\b', r'\bkinda\b', r'\bgonna\b',
+        r'\bwanna\b', r'\bsorta\b', r'\bdude\b', r'\bguys\b',
+        r'\bi mean\b', r'\bbasically\b', r'\bobviously\b',
+        r'\btotally\b', r'\blike\b.*\blike\b'
+    ]
+    
+    human_expr_count = sum(1 for expr in human_expressions if re.search(expr, text_lower))
+    if human_expr_count >= 2:
+        human_score += 0.5
+    elif human_expr_count == 1:
+        human_score += 0.25
+    
+    # 3. Sentence length variance (AI = uniform, Human = varied)
+    sentences = re.split(r'[.!?]+', text)
+    sentences = [s.strip() for s in sentences if s.strip()]
+    
+    if len(sentences) >= 2:
+        sent_lengths = [len(s.split()) for s in sentences]
+        avg_len = sum(sent_lengths) / len(sent_lengths)
+        variance = sum((x - avg_len) ** 2 for x in sent_lengths) / len(sent_lengths)
+        
+        if variance > 50:  # High variance = human
+            human_score += 0.2
+        elif variance < 10:  # Low variance = AI
+            ai_score += 0.2
+    
+    # 4. Personal pronouns (more common in human text)
+    words = text_lower.split()
+    personal_pronouns = ['i', 'me', 'my', 'mine', 'we', 'us', 'our']
+    pronoun_count = sum(1 for word in words if word in personal_pronouns)
+    if len(words) > 0:
+        pronoun_ratio = pronoun_count / len(words)
+        if pronoun_ratio > 0.05:
+            human_score += 0.15
+    
+    # 5. Vocabulary diversity (AI = very diverse, Human = moderate)
+    if len(words) >= 20:
+        unique_ratio = len(set(words)) / len(words)
+        if unique_ratio > 0.75:  # Very diverse = AI
+            ai_score += 0.2
+        elif unique_ratio < 0.5:  # Repetitive = human
+            human_score += 0.15
+    
+    # 6. Formal transitional phrases
+    if re.search(r'\b(firstly|secondly|thirdly|finally|lastly)\b', text_lower):
+        ai_score += 0.15
+    
+    # 7. Questions and exclamations
+    question_count = text.count('?')
+    exclamation_count = text.count('!')
+    if question_count + exclamation_count >= 2:
+        human_score += 0.15
+    
+    # 8. Typos and informal patterns (human indicator)
+    typo_patterns = [r'\b(teh|hte|adn|taht|waht)\b', r'\s{2,}']
+    has_typos = any(re.search(pattern, text) for pattern in typo_patterns)
+    if has_typos:
+        human_score += 0.2
+    
+    # Make final decision
+    total_score = ai_score + human_score
+    if total_score == 0:
+        # No strong signals, slight human bias
+        ai_confidence = 0.45
+        human_confidence = 0.55
+        label = "human"
+    else:
+        ai_confidence = ai_score / total_score
+        human_confidence = human_score / total_score
+        label = "ai" if ai_confidence > human_confidence else "human"
+    
+    # Normalize confidence to 0.5-0.95 range
+    final_confidence = 0.5 + (max(ai_confidence, human_confidence) * 0.45)
     
     return {
-        "ai_generated": ai_confidence >= 0.5,
-        "ai_confidence": ai_confidence,
-        "human_confidence": 1.0 - ai_confidence,
-        "inference_status": "fallback (stub)"
+        "label": label,
+        "confidence": float(min(0.95, final_confidence)),
+        "ai_probability": float(ai_confidence),
+        "human_probability": float(human_confidence),
+        "ai_generated": label == "ai",
+        "ai_confidence": float(ai_confidence),
+        "human_confidence": float(human_confidence),
+        "inference_status": "heuristic (enhanced)"
     }

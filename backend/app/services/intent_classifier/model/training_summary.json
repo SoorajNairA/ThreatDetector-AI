@@ -1,0 +1,14 @@
+{
+  "train_samples": 20080,
+  "test_samples": 5021,
+  "train_accuracy": 0.947808764940239,
+  "test_accuracy": 0.9402509460266879,
+  "test_precision": 0.9925812228191353,
+  "test_recall": 0.9347145266200916,
+  "test_f1": 0.9627791563275434,
+  "vocabulary_size": 5000,
+  "classes": [
+    "safe",
+    "threat"
+  ]
+}

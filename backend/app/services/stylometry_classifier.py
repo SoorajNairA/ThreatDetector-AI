@@ -75,12 +75,79 @@ def predict(text: str):
         repetition_score * 0.15
     )
     
+    # Determine formality level based on multiple indicators
+    formal_indicators = 0
+    informal_indicators = 0
+    
+    # Check for informal markers
+    informal_patterns = [
+        r'\blol\b', r'\bomg\b', r'\bwtf\b', r'\blmao\b', r'\brofl\b',
+        r'\bya\b', r'\byeah\b', r'\bnah\b', r'\bgonna\b', r'\bwanna\b',
+        r'\bdude\b', r'\bguys\b', r'\bkinda\b', r'\bsorta\b',
+        r'😂', r'😊', r'👍', r'❤️', r'🤣'  # emojis
+    ]
+    
+    for pattern in informal_patterns:
+        if re.search(pattern, text, re.IGNORECASE):
+            informal_indicators += 1
+    
+    # Check for formal markers
+    formal_patterns = [
+        r'\bdear\s+(?:sir|madam)\b', r'\bsincerely\b', r'\bregards\b',
+        r'\bpursuant\b', r'\btherefore\b', r'\bfurthermore\b',
+        r'\bnevertheless\b', r'\bhowever\b', r'\bmoreover\b',
+        r'\bplease find attached\b', r'\bi am writing to\b',
+        r'\bwith respect to\b', r'\bin accordance with\b'
+    ]
+    
+    for pattern in formal_patterns:
+        if re.search(pattern, text, re.IGNORECASE):
+            formal_indicators += 1
+    
+    # Check capitalization and punctuation
+    if text and text[0].isupper() and text.rstrip().endswith(('.', '!', '?')):
+        formal_indicators += 0.5
+    
+    # Check for contractions (informal)
+    contractions = ["n't", "'s", "'re", "'ve", "'ll", "'d", "'m"]
+    contraction_count = sum(1 for c in contractions if c in text.lower())
+    if contraction_count > 2:
+        informal_indicators += 1
+    
+    # Check average sentence length (longer = more formal)
+    if avg_sentence_len > 20:
+        formal_indicators += 1
+    elif avg_sentence_len < 10:
+        informal_indicators += 1
+    
+    # Check average word length (longer = more formal)
+    if avg_token_len > 5.5:
+        formal_indicators += 1
+    elif avg_token_len < 4:
+        informal_indicators += 1
+    
+    # Make final decision
+    if informal_indicators > formal_indicators + 1:
+        style = "informal"
+        confidence = min(0.95, 0.6 + (informal_indicators * 0.1))
+    elif formal_indicators > informal_indicators + 1:
+        style = "formal"
+        confidence = min(0.95, 0.6 + (formal_indicators * 0.1))
+    else:
+        # Neutral - use sentence/word length as tiebreaker
+        if avg_sentence_len > 15 or avg_token_len > 5:
+            style = "formal"
+            confidence = 0.55
+        else:
+            style = "informal"
+            confidence = 0.55
+    
     return {
+        "style": style,
+        "confidence": float(confidence),
         "style_score": float(min(1.0, max(0.0, style_score))),
         "avg_token_len": float(avg_token_len),
-        "token_variance": float(token_variance),
         "avg_sentence_len": float(avg_sentence_len),
-        "char_entropy": float(char_entropy),
-        "punct_ratio": float(punct_ratio),
-        "repetition_ratio": float(repetition_ratio)
+        "formal_indicators": formal_indicators,
+        "informal_indicators": informal_indicators
     }
