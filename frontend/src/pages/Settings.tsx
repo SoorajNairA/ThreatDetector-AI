@@ -1,12 +1,17 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Shield, Key, ArrowLeft, Copy, Check, LogOut, CheckCircle2, Beaker } from 'lucide-react';
+import { Shield, Key, ArrowLeft, Copy, Check, LogOut, CheckCircle2, Beaker, Lock } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 import { getApiKey, setApiKey as saveApiKey, listAPIKeys, createAPIKey, deleteAPIKey, type APIKeyResponse } from '@/services/api';
+
+interface PrivacySettings {
+  allow_training_data: boolean;
+  training_consent_at: string | null;
+}
 
 const Settings = () => {
   const [apiKey, setApiKey] = useState('');
@@ -16,6 +21,8 @@ const Settings = () => {
   const [copied, setCopied] = useState(false);
   const [newlyCreatedKey, setNewlyCreatedKey] = useState<string | null>(null);
   const [showInactive, setShowInactive] = useState(false);
+  const [privacySettings, setPrivacySettings] = useState<PrivacySettings | null>(null);
+  const [isUpdatingPrivacy, setIsUpdatingPrivacy] = useState(false);
   const { user, signOut } = useAuth();
 
   // Load current API key and list on mount
@@ -24,8 +31,29 @@ const Settings = () => {
     if (currentKey) {
       setApiKey(currentKey);
       loadApiKeys();
+      loadPrivacySettings();
     }
   }, []);
+
+  const loadPrivacySettings = async () => {
+    try {
+      const response = await fetch('/api/ml/privacy', {
+        headers: {
+          'X-API-Key': getApiKey() || ''
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setPrivacySettings({
+          allow_training_data: data.allow_training_data,
+          training_consent_at: data.training_consent_at
+        });
+      }
+    } catch (error) {
+      console.error('Failed to load privacy settings:', error);
+    }
+  };
 
   const loadApiKeys = async () => {
     try {
@@ -136,6 +164,40 @@ const Settings = () => {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const handleToggleTrainingData = async () => {
+    if (!privacySettings) return;
+    
+    setIsUpdatingPrivacy(true);
+    try {
+      const response = await fetch('/api/ml/privacy', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-API-Key': getApiKey() || ''
+        },
+        body: JSON.stringify({
+          allow_training_data: !privacySettings.allow_training_data
+        })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setPrivacySettings({
+          allow_training_data: data.allow_training_data,
+          training_consent_at: data.training_consent_at
+        });
+        toast.success(data.message);
+      } else {
+        const error = await response.json();
+        toast.error(error.detail || 'Failed to update privacy settings');
+      }
+    } catch (error) {
+      toast.error('Failed to update privacy settings');
+    } finally {
+      setIsUpdatingPrivacy(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background grid-bg">
       {/* Header */}
@@ -231,6 +293,83 @@ const Settings = () => {
                   Update Active Key
                 </Button>
               </form>
+
+              {/* Privacy Settings Section */}
+              <div className="mt-8 border-t border-border/50 pt-6">
+                <h2 className="font-mono-display text-lg font-semibold text-foreground mb-2">
+                  Privacy & Data Usage
+                </h2>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Control how your data is used to improve our machine learning models
+                </p>
+
+                {privacySettings && (
+                  <div className="max-w-lg">
+                    <div className="flex items-start gap-4 p-4 rounded-md bg-secondary/20 border border-border/30">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Lock className="h-4 w-4 text-muted-foreground" />
+                          <span className="font-mono-display text-sm font-semibold text-foreground">
+                            Training Data Consent
+                          </span>
+                        </div>
+                        <p className="text-xs text-muted-foreground mb-3">
+                          {privacySettings.allow_training_data
+                            ? 'Your analysis data is being used to improve threat detection accuracy. You can opt out anytime.'
+                            : 'Your data is NOT being used for training. Only you have access to your private analysis data.'}
+                        </p>
+                        
+                        {privacySettings.training_consent_at && (
+                          <p className="text-xs text-muted-foreground/70 mb-3">
+                            Last updated: {new Date(privacySettings.training_consent_at).toLocaleString()}
+                          </p>
+                        )}
+
+                        <Button
+                          onClick={handleToggleTrainingData}
+                          disabled={isUpdatingPrivacy}
+                          variant={privacySettings.allow_training_data ? "destructive" : "default"}
+                          size="sm"
+                          className="font-mono-display"
+                        >
+                          {isUpdatingPrivacy
+                            ? 'Updating...'
+                            : privacySettings.allow_training_data
+                            ? 'Disable Training Data'
+                            : 'Enable Training Data'}
+                        </Button>
+                      </div>
+                      
+                      <div className={`mt-1 px-3 py-1 rounded text-xs font-mono-display ${
+                        privacySettings.allow_training_data
+                          ? 'bg-green-500/10 text-green-400 border border-green-500/30'
+                          : 'bg-muted text-muted-foreground border border-border/50'
+                      }`}>
+                        {privacySettings.allow_training_data ? 'Enabled' : 'Disabled'}
+                      </div>
+                    </div>
+
+                    <div className="mt-4 p-3 rounded-md bg-blue-500/10 border border-blue-500/30">
+                      <p className="text-xs text-blue-400">
+                        <strong>ℹ️ How it works:</strong>
+                      </p>
+                      <ul className="mt-2 space-y-1 text-xs text-blue-400/80">
+                        <li>• When enabled, text features (not raw text) are stored for model training</li>
+                        <li>• Your data remains encrypted and isolated to your account</li>
+                        <li>• Helps improve detection accuracy through machine learning</li>
+                        <li>• You can disable this at any time</li>
+                        <li>• Only applies to future analyses (doesn't affect past data)</li>
+                      </ul>
+                    </div>
+                  </div>
+                )}
+
+                {!privacySettings && (
+                  <div className="text-sm text-muted-foreground">
+                    Loading privacy settings...
+                  </div>
+                )}
+              </div>
 
               <div className="mt-8 border-t border-border/50 pt-6">
                 <h2 className="font-mono-display text-lg font-semibold text-foreground mb-4">

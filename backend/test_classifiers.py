@@ -1,6 +1,6 @@
 """Test script to verify all 5 classifiers work correctly with ensemble"""
 import sys
-sys.path.insert(0, 'c:/workspace/backend')
+sys.path.insert(0, 'c:/Mysih/backend')
 
 from app.services.ai_classifier import predict as ai_predict
 from app.services.intent_classifier import predict as intent_predict
@@ -10,7 +10,26 @@ from app.services.keyword_classifier import predict as keyword_predict
 
 # Ensemble configuration
 WEIGHTS = {'ai': 0.4, 'intent': 0.3, 'style': 0.15, 'url': 0.1, 'keyword': 0.05}
-INTENT_MAP = {'phishing': 0.9, 'scam': 0.85, 'propaganda': 0.7, 'spam': 0.6, 'unknown': 0.3}
+
+# Intent categories to risk score mapping
+INTENT_MAP = {
+    'phishing': 0.95,
+    'scam': 0.90,
+    'propaganda': 0.70,
+    'spam': 0.60,
+    'unknown': 0.40,
+    'safe': 0.10,
+    'legitimate': 0.10
+}
+
+# Keyword categories to risk score mapping  
+KEYWORD_MAP = {
+    'phishing': 0.95,
+    'scam': 0.90,
+    'propaganda': 0.70,
+    'spam': 0.60,
+    'safe': 0.10
+}
 
 # Test cases with different risk profiles
 test_cases = [
@@ -58,17 +77,18 @@ def analyze_ensemble(text):
         results['ai_confidence'] = ai_result.get('ai_confidence', 0.0)
         scores['ai'] = float(ai_result.get('ai_confidence', 0.0))
     except Exception as e:
-        print(f"  ⚠ AI classifier error: {e}")
+        print(f"  [WARNING] AI classifier error: {e}")
         scores['ai'] = 0.0
     
     try:
         intent_result = intent_predict(text)
         results['intent'] = intent_result.get('intent', 'unknown')
         results['intent_confidence'] = intent_result.get('intent_confidence', 0.0)
-        scores['intent'] = INTENT_MAP.get(results['intent'], 0.3)
+        # Use intent category to get risk score
+        scores['intent'] = INTENT_MAP.get(results['intent'], 0.4)
     except Exception as e:
-        print(f"  ⚠ Intent classifier error: {e}")
-        scores['intent'] = 0.0
+        print(f"  [WARNING] Intent classifier error: {e}")
+        scores['intent'] = 0.4
     
     try:
         style_result = style_predict(text)
@@ -76,7 +96,7 @@ def analyze_ensemble(text):
         human_likeness = float(style_result.get('style_score', 0.0))
         scores['style'] = 1.0 - human_likeness  # Invert to risk score
     except Exception as e:
-        print(f"  ⚠ Stylometry classifier error: {e}")
+        print(f"  [WARNING] Stylometry classifier error: {e}")
         scores['style'] = 0.5
     
     try:
@@ -86,16 +106,18 @@ def analyze_ensemble(text):
         results['domains'] = url_result.get('domains', [])
         scores['url'] = float(url_result.get('url_score', 0.0))
     except Exception as e:
-        print(f"  ⚠ URL classifier error: {e}")
+        print(f"  [WARNING] URL classifier error: {e}")
         scores['url'] = 0.0
     
     try:
         keyword_result = keyword_predict(text)
         results['keywords'] = keyword_result.get('keywords', [])
         results['keyword_score'] = keyword_result.get('keyword_score', 0.0)
-        scores['keyword'] = float(keyword_result.get('keyword_score', 0.0))
+        results['keyword_category'] = keyword_result.get('category', 'safe')
+        # Use category-based scoring instead of raw keyword_score
+        scores['keyword'] = KEYWORD_MAP.get(results['keyword_category'], 0.1)
     except Exception as e:
-        print(f"  ⚠ Keyword classifier error: {e}")
+        print(f"  [WARNING] Keyword classifier error: {e}")
         scores['keyword'] = 0.0
     
     # Compute weighted ensemble score
@@ -120,7 +142,7 @@ print('=' * 80)
 print('ENSEMBLE CLASSIFIER TEST SUITE')
 print('=' * 80)
 print(f'\nEnsemble Weights: AI={WEIGHTS["ai"]}, Intent={WEIGHTS["intent"]}, Style={WEIGHTS["style"]}, URL={WEIGHTS["url"]}, Keyword={WEIGHTS["keyword"]}')
-print(f'Risk Thresholds: HIGH ≥0.8, MEDIUM ≥0.5, LOW <0.5\n')
+print(f'Risk Thresholds: HIGH >=0.8, MEDIUM >=0.5, LOW <0.5\n')
 
 for i, test_case in enumerate(test_cases, 1):
     print('=' * 80)
@@ -163,6 +185,8 @@ for i, test_case in enumerate(test_cases, 1):
     
     print(f'  5. Keyword Classifier:')
     keywords = analysis["results"].get("keywords", [])
+    keyword_category = analysis["results"].get("keyword_category", "safe")
+    print(f'     - Category: {keyword_category}')
     print(f'     - Keywords Found: {len(keywords)}')
     if keywords:
         print(f'     - Top Keywords: {", ".join(keywords[:6])}{"..." if len(keywords) > 6 else ""}')
@@ -181,9 +205,9 @@ for i, test_case in enumerate(test_cases, 1):
     
     # Check if result matches expectation
     if analysis['risk_level'] == test_case['expected']:
-        print(f'  ✓ PASS - Matches expected level: {test_case["expected"].upper()}')
+        print(f'  [PASS] - Matches expected level: {test_case["expected"].upper()}')
     else:
-        print(f'  ✗ FAIL - Expected {test_case["expected"].upper()}, got {analysis["risk_level"].upper()}')
+        print(f'  [FAIL] - Expected {test_case["expected"].upper()}, got {analysis["risk_level"].upper()}')
     
     print()
 
@@ -191,12 +215,12 @@ print('=' * 80)
 print('TEST SUMMARY')
 print('=' * 80)
 print('\nAll 5 classifiers are integrated and working in ensemble mode:')
-print('  ✓ AI Classifier (weight: 0.4) - Detects AI-generated content')
-print('  ✓ Intent Classifier (weight: 0.3) - Identifies phishing/scam/spam')
-print('  ✓ Stylometry Classifier (weight: 0.15) - Analyzes writing patterns')
-print('  ✓ URL Classifier (weight: 0.1) - Detects suspicious URLs')
-print('  ✓ Keyword Classifier (weight: 0.05) - Matches risk keywords')
+print('  [OK] AI Classifier (weight: 0.4) - Detects AI-generated content')
+print('  [OK] Intent Classifier (weight: 0.3) - Identifies phishing/scam/spam')
+print('  [OK] Stylometry Classifier (weight: 0.15) - Analyzes writing patterns')
+print('  [OK] URL Classifier (weight: 0.1) - Detects suspicious URLs')
+print('  [OK] Keyword Classifier (weight: 0.05) - Matches risk keywords')
 print('\nEnsemble produces weighted risk score from 0.0-1.0')
-print('Risk levels: HIGH (≥0.8), MEDIUM (≥0.5), LOW (<0.5)')
+print('Risk levels: HIGH (>=0.8), MEDIUM (>=0.5), LOW (<0.5)')
 print()
 
