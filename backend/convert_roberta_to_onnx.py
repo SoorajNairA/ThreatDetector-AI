@@ -44,8 +44,8 @@ def convert_to_onnx(model_name: str, output_path: str, opset_version: int = 14):
     input_names = list(inputs.keys())
     
     # Create output path
-    output_path = Path(output_path)
-    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_file = Path(output_path)
+    output_file.parent.mkdir(parents=True, exist_ok=True)
     
     print(f"Converting to ONNX format...")
     print(f"  Input names: {input_names}")
@@ -55,7 +55,7 @@ def convert_to_onnx(model_name: str, output_path: str, opset_version: int = 14):
     torch.onnx.export(
         model,
         tuple(inputs.values()),
-        str(output_path),
+        str(output_file),
         input_names=input_names,
         output_names=["logits"],
         dynamic_axes={
@@ -69,14 +69,14 @@ def convert_to_onnx(model_name: str, output_path: str, opset_version: int = 14):
     )
     
     print(f"✓ Model converted successfully!")
-    print(f"  Saved to: {output_path}")
-    print(f"  Size: {output_path.stat().st_size / (1024*1024):.2f} MB")
+    print(f"  Saved to: {output_file}")
+    print(f"  Size: {output_file.stat().st_size / (1024*1024):.2f} MB")
     
     # Test the converted model
     print(f"\nTesting ONNX model...")
     import onnxruntime as ort
     
-    session = ort.InferenceSession(str(output_path), providers=["CPUExecutionProvider"])
+    session = ort.InferenceSession(str(output_file), providers=["CPUExecutionProvider"])
     
     # Prepare inputs for ONNX
     onnx_inputs = {k: v.numpy() for k, v in inputs.items()}
@@ -100,14 +100,14 @@ def convert_to_onnx(model_name: str, output_path: str, opset_version: int = 14):
         print(f"  ⚠ Warning: Outputs differ by {max_diff:.6f}")
     
     # Quantize the model for even better performance
-    quantized_path = output_path.with_suffix('.quant.onnx')
+    quantized_path = output_file.with_suffix('.quant.onnx')
     print(f"\nQuantizing model for faster inference...")
     
     try:
         from onnxruntime.quantization import quantize_dynamic, QuantType
         
         quantize_dynamic(
-            str(output_path),
+            str(output_file),
             str(quantized_path),
             weight_type=QuantType.QUInt8
         )
@@ -115,11 +115,11 @@ def convert_to_onnx(model_name: str, output_path: str, opset_version: int = 14):
         print(f"✓ Quantized model saved!")
         print(f"  Saved to: {quantized_path}")
         print(f"  Size: {quantized_path.stat().st_size / (1024*1024):.2f} MB")
-        print(f"  Reduction: {(1 - quantized_path.stat().st_size / output_path.stat().st_size) * 100:.1f}%")
+        print(f"  Reduction: {(1 - quantized_path.stat().st_size / output_file.stat().st_size) * 100:.1f}%")
     except Exception as e:
         print(f"  ⚠ Quantization failed: {e}")
     
-    return output_path, quantized_path if quantized_path.exists() else None
+    return output_file, quantized_path if quantized_path.exists() else None
 
 
 def main():

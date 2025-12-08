@@ -160,13 +160,13 @@ class TrainingService:
     async def get_training_status(self, account_id: Optional[UUID] = None) -> Dict:
         """Get current training status and statistics."""
         try:
-            # Count untrained samples
-            query = self.supabase.table('training_data').select('id', count='exact').eq('trained', False)
+            # Count untrained samples with consent
+            query = self.supabase.table('training_data').select('id').eq('trained', False).eq('consent_verified', True)
             if account_id:
                 query = query.eq('account_id', str(account_id))
             
             untrained_response = query.execute()
-            untrained_count = untrained_response.count or 0
+            untrained_count = len(untrained_response.data) if untrained_response.data else 0
             
             # Get active model info
             model_query = self.supabase.table('model_metadata').select('*').eq('is_active', True)

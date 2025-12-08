@@ -19,7 +19,7 @@ import numpy as np
 from sklearn.linear_model import SGDClassifier
 from sklearn.preprocessing import StandardScaler
 
-from ..intent_classifier import get_classifier as get_static_classifier
+from app.services.intent_classifier import get_classifier as get_static_classifier
 
 
 class OnlineLearningClassifier:
@@ -30,7 +30,7 @@ class OnlineLearningClassifier:
     3. Lightweight SGDClassifier with partial_fit
     """
     
-    def __init__(self, model_dir: Path = None):
+    def __init__(self, model_dir: Optional[Path] = None):
         """Initialize the online learning classifier."""
         self.model_dir = model_dir or Path(__file__).parent.parent.parent / "models"
         self.model_dir.mkdir(parents=True, exist_ok=True)
@@ -52,7 +52,7 @@ class OnlineLearningClassifier:
         # Load existing model if available
         self._load_model()
     
-    def extract_features(self, text: str) -> Dict[str, any]:
+    def extract_features(self, text: str) -> Dict:
         """
         Extract features from text.
         
@@ -203,6 +203,8 @@ class OnlineLearningClassifier:
         
         # Predict with online model
         try:
+            if self.model is None:
+                raise ValueError("Model not initialized")
             prediction = self.model.predict(features)[0]
             probabilities = self.model.predict_proba(features)[0]
             confidence = float(max(probabilities))
@@ -259,6 +261,10 @@ class OnlineLearningClassifier:
             X_scaled = self.scaler.transform(X)
         
         # Train model
+        if self.model is None:
+            self._initialize_model(X.shape[1])
+        
+        assert self.model is not None, "Model should be initialized"
         self.model.partial_fit(X_scaled, y, classes=self.classes)
         
         # Update stats
@@ -275,7 +281,7 @@ class OnlineLearningClassifier:
             'training_time_ms': training_time
         }
     
-    def save_model(self, filename: str = None) -> str:
+    def save_model(self, filename: Optional[str] = None) -> str:
         """Save the model and scaler to disk."""
         if filename is None:
             filename = f"online_model_{self.model_version}.pkl"
