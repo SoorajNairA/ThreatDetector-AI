@@ -1,0 +1,260 @@
+# Guard Python SDK
+
+Official Python SDK for the Guard Security Platform API.
+
+## Installation
+
+```bash
+pip install guard-sdk
+```
+
+Or install from source:
+
+```bash
+git clone https://github.com/guard-security/guard-python-sdk.git
+cd guard-python-sdk
+pip install -e .
+```
+
+## Quick Start
+
+```python
+from guard_sdk import GuardClient
+
+# Initialize client
+client = GuardClient(
+    api_key="your_api_key_here",
+    base_url="http://localhost:8000"  # or your production URL
+)
+
+# Analyze text
+result = client.analyze("Click here to verify your account now!")
+
+print(f"Risk Level: {result.risk_level}")  # high, medium, or low
+print(f"Risk Score: {result.risk_score:.1%}")  # 0.0 to 1.0
+print(f"Intent: {result.intent}")  # phishing, scam, spam, legitimate
+print(f"AI Generated: {result.ai_generated}")
+```
+
+## Features
+
+### Text Analysis
+
+```python
+# Basic analysis
+result = client.analyze("Suspicious text here")
+
+# Sandbox mode (faster, uses mock data)
+result = client.analyze("Test text", sandbox=True)
+
+# With metadata
+result = client.analyze(
+    "Text to analyze",
+    metadata={"user_id": "123", "source": "email"}
+)
+
+# Check risk level
+if result.is_high_risk():
+    print("⚠️ High risk detected!")
+    print(f"Intent: {result.intent}")
+    print(f"Confidence: {result.intent_confidence:.1%}")
+```
+
+### Batch Analysis
+
+```python
+texts = [
+    "Click here to claim your prize",
+    "Meeting at 3pm tomorrow",
+    "Verify your account immediately"
+]
+
+results = client.batch_analyze(texts, delay=0.1)
+
+for text, result in zip(texts, results):
+    print(f"{text[:50]}: {result.risk_level}")
+```
+
+### API Key Management
+
+```python
+# Create new API key
+new_key = client.create_api_key("Production Key")
+print(f"New API Key: {new_key['key']}")
+print(f"Key ID: {new_key['key_id']}")
+
+# List all keys
+keys = client.list_api_keys()
+for key in keys:
+    print(f"{key['name']}: {key['created_at']}")
+
+# Revoke key
+client.revoke_api_key(key_id="some_key_id")
+```
+
+### Health Check
+
+```python
+status = client.health_check()
+print(status)
+```
+
+## Analysis Result
+
+The `AnalysisResult` object contains:
+
+```python
+result.risk_level        # "high", "medium", or "low"
+result.risk_score        # 0.0 to 1.0
+result.timestamp         # ISO 8601 timestamp
+
+# AI Detection
+result.ai_generated      # bool
+result.ai_confidence     # 0.0 to 1.0
+result.human_confidence  # 0.0 to 1.0
+
+# Intent Classification
+result.intent            # "phishing", "scam", "spam", "legitimate"
+result.intent_confidence # 0.0 to 1.0
+
+# Style Analysis
+result.style_score       # 0.0 to 1.0 (human-likeness)
+
+# URL Detection
+result.url_detected      # bool
+result.url_score         # 0.0 to 1.0
+result.domains          # list of detected domains
+
+# Keyword Matching
+result.keywords         # list of matched keywords
+result.keyword_score    # 0.0 to 1.0
+
+# Helper methods
+result.is_high_risk()   # bool
+result.is_medium_risk() # bool
+result.is_low_risk()    # bool
+result.to_dict()        # dict representation
+```
+
+## Context Manager
+
+Use as a context manager for automatic cleanup:
+
+```python
+with GuardianClient(api_key="your_key") as client:
+    result = client.analyze("Text to analyze")
+    print(result.risk_level)
+# Session automatically closed
+```
+
+## Error Handling
+
+```python
+from guard_sdk import GuardClient, AuthenticationError, RateLimitError, GuardError
+
+try:
+    client = GuardClient(api_key="your_key")
+    result = client.analyze("Text")
+except AuthenticationError:
+    print("Invalid API key")
+except RateLimitError:
+    print("Rate limit exceeded")
+except GuardError as e:
+    print(f"API error: {e}")
+```
+
+## Configuration
+
+```python
+client = GuardClient(
+    api_key="your_api_key",
+    base_url="http://localhost:8000",  # API endpoint
+    timeout=30  # Request timeout in seconds
+)
+```
+
+## Examples
+
+### Email Scanner
+
+```python
+from guard_sdk import GuardClient
+
+client = GuardClient(api_key="your_key")
+
+def scan_email(subject, body):
+    """Scan email for threats."""
+    full_text = f"{subject}\n\n{body}"
+    result = client.analyze(full_text)
+    
+    if result.is_high_risk():
+        return "BLOCK", f"Threat detected: {result.intent}"
+    elif result.is_medium_risk():
+        return "WARN", f"Suspicious content: {result.intent}"
+    else:
+        return "ALLOW", "Safe"
+
+# Usage
+action, reason = scan_email(
+    subject="Urgent: Verify your account",
+    body="Click here to verify..."
+)
+print(f"{action}: {reason}")
+```
+
+### Chat Moderation
+
+```python
+def moderate_message(message):
+    """Moderate chat message."""
+    result = client.analyze(message)
+    
+    return {
+        "allowed": not result.is_high_risk(),
+        "risk_level": result.risk_level,
+        "risk_score": result.risk_score,
+        "reason": result.intent if result.is_high_risk() else None
+    }
+
+# Usage
+moderation = moderate_message("Hey, want to buy cheap products?")
+if not moderation["allowed"]:
+    print(f"Message blocked: {moderation['reason']}")
+```
+
+### Bulk Content Analysis
+
+```python
+import csv
+
+def analyze_csv(input_file, output_file):
+    """Analyze texts from CSV."""
+    with open(input_file) as f_in, open(output_file, 'w', newline='') as f_out:
+        reader = csv.DictReader(f_in)
+        writer = csv.DictWriter(f_out, fieldnames=reader.fieldnames + ['risk_level', 'risk_score', 'intent'])
+        writer.writeheader()
+        
+        for row in reader:
+            result = client.analyze(row['text'])
+            row['risk_level'] = result.risk_level
+            row['risk_score'] = result.risk_score
+            row['intent'] = result.intent
+            writer.writerow(row)
+
+analyze_csv('messages.csv', 'analyzed.csv')
+```
+
+## Requirements
+
+- Python 3.7+
+- requests >= 2.25.0
+
+## License
+
+MIT License
+
+## Support
+
+- Documentation: https://docs.guard-security.com
+- Issues: https://github.com/guard-security/guard-python-sdk/issues
+- Email: support@guard-security.com

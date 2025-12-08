@@ -1,0 +1,123 @@
+{
+  "direct_threats": [
+    "kill", "attack", "hurt", "bomb", "stab", "shoot", "destroy",
+    "murder", "rape", "torture", "wound", "beat", "punch",
+    "strangle", "poison", "execute", "assassinate", "eliminate",
+    "harm", "damage", "violence", "violent", "threat", "threaten",
+    "blow up", "detonate", "assault", "rape", "molest", "abuse",
+    "injure", "maim", "burn", "drown"
+  ],
+  "contextual_phrases": [
+    "eliminate target",
+    "plan the attack",
+    "will kill",
+    "going to hurt",
+    "plan to bomb",
+    "plan the bomb",
+    "plan a bomb",
+    "blow up the",
+    "will blow up",
+    "gonna blow up",
+    "detonate a",
+    "will detonate",
+    "we will attack",
+    "you re going to pay",
+    "watch out",
+    "i know where you live",
+    "find you at",
+    "find you at home",
+    "find you at work",
+    "target your family",
+    "target your kids",
+    "i m coming for you",
+    "you will regret",
+    "i ll find you",
+    "wait till i catch you",
+    "wait till i catch",
+    "you re dead",
+    "your dead",
+    "you dead",
+    "settle this",
+    "settle this tonight",
+    "get you tomorrow",
+    "i ll get you",
+    "get you later",
+    "be careful",
+    "something will happen",
+    "gonna hurt",
+    "gonna kill",
+    "gonna bomb",
+    "gonna attack",
+    "beat you up",
+    "will beat you",
+    "gang coming",
+    "our gang",
+    "my gang",
+    "crew coming",
+    "my crew",
+    "group is coming",
+    "have a grenade",
+    "address and workplace",
+    "track you down",
+    "coordinating the assault",
+    "tonight you re dead",
+    "next week we settle"
+  ],
+  "weapon_references": [
+    "gun", "rifle", "knife", "sword", "explosive", "bomb", "grenade",
+    "pistol", "shotgun", "weapon", "armed", "ammunition", "bullets",
+    "firearms", "blade", "axe", "poison", "gas", "chemical"
+  ],
+  "coordinated_violence": [
+    "plan", "organize", "arrange", "schedule", "meet", "gather",
+    "assemble", "prepare", "ready", "coordinate", "together",
+    "group attack", "mob", "gang", "crew", "team up"
+  ],
+  "intent_indicators": [
+    "will", "going to", "plan to", "about to", "intend to", "aim to",
+    "promise to", "swear to", "determined to", "decide to", "commit to"
+  ],
+  "location_targeting": [
+    "at your house", "your home", "your address", "your workplace",
+    "where you live", "where you work", "your school", "your office",
+    "your building", "your street", "location", "track you"
+  ],
+  "personal_targeting": [
+    "you", "your family", "your kids", "your loved ones", "your friends",
+    "your mother", "your father", "your sister", "your brother",
+    "your girlfriend", "your boyfriend", "your wife", "your husband"
+  ],
+  "temporal_indicators": [
+    "tonight", "tomorrow", "soon", "right now", "immediately", "in an hour",
+    "this week", "next week", "when I see you", "next time I catch you"
+  ],
+  "safe_context_keywords": [
+    "movie", "game", "gaming", "fictional", "character", "joke", "joking",
+    "sarcasm", "kidding", "just kidding", "playing", "pretend", "imagine",
+    "hypothetically", "what if", "suppose", "scenario", "story", "novel",
+    "book", "film", "show", "series", "episode", "play", "performance",
+    "roleplay", "acting", "act", "simulation", "code", "programming",
+    "script", "algorithm", "system", "process", "kill process", "kill task",
+    "attack surface", "destroy cache", "bomb the project", "attack vector",
+    "background", "application", "software", "app", "program", "thread",
+    "service", "daemon", "process", "background process", "background task",
+    "debug", "testing", "test case", "unit test", "integration test",
+    "sports", "team", "defense", "offense", "field", "game", "match", "score",
+    "football", "basketball", "baseball", "soccer", "tennis",
+    "presentation", "slide", "speech", "talk", "presentation kill",
+    "free throw", "pitch", "shot", "pass", "touchdown",
+    "humor", "funny", "comedian", "laugh", "laughter", "comedic",
+    "exaggeration", "hyperbole", "figure of speech", "figurative",
+    "metaphor", "simile", "poetic", "lyrics", "song", "rap", "beat",
+    "fitness", "exercise", "workout", "training", "cardio", "killer workout",
+    "meeting", "conference", "convention", "event"
+  ],
+  "boost_factors": {
+    "multiple_weapons": 1.2,
+    "specific_target": 1.15,
+    "specific_time": 1.1,
+    "group_language": 1.15,
+    "personal_targeting": 1.1
+  },
+  "safe_context_penalty": 0.8
+}
