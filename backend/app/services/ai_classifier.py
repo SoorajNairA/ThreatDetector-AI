@@ -10,7 +10,7 @@ try:
     PYTORCH_AVAILABLE = True
 except ImportError:
     PYTORCH_AVAILABLE = False
-    torch = None
+    torch = None  # type: ignore
 
 # ============================================================================
 # MODEL INITIALIZATION (runs once when module is imported)
@@ -59,7 +59,7 @@ if not use_onnx:
         MODEL_NAME = os.environ.get("AI_DETECTOR_MODEL", "Hello-SimpleAI/chatgpt-detector-roberta")
         
         # Device configuration
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")  # type: ignore
         
         try:
             tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
@@ -172,7 +172,7 @@ def predict(text: str) -> dict:
     # ========================================================================
     # INFERENCE PATH 2: PyTorch RoBERTa Model
     # ========================================================================
-    if model is not None and tokenizer is not None:
+    if model is not None and tokenizer is not None and torch is not None:
         try:
             # 1. Tokenize with padding and truncation
             inputs = tokenizer(
@@ -187,12 +187,12 @@ def predict(text: str) -> dict:
             inputs = {k: v.to(device) for k, v in inputs.items()}
             
             # 2. Run inference with no gradient computation
-            with torch.no_grad():
+            with torch.no_grad():  # type: ignore
                 outputs = model(**inputs)
                 logits = outputs.logits[0]  # Get logits for single input
             
             # 3. Compute probabilities
-            probs = torch.nn.functional.softmax(logits, dim=-1)
+            probs = torch.nn.functional.softmax(logits, dim=-1)  # type: ignore
             probs_np = probs.cpu().numpy()
             
             # Model output format depends on the specific model
