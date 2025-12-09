@@ -19,6 +19,8 @@ export interface ThreatRecord {
   risk_score: number;
   intent: string;
   ai_generated: boolean;
+  ai_confidence?: number;
+  intent_confidence?: number;
   timestamp: string;
   actor?: string;
   user_id?: string;

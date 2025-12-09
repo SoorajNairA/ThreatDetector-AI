@@ -179,3 +179,46 @@ export const deleteAPIKey = (keyId: string): Promise<{ message: string }> => {
     method: 'DELETE',
   });
 };
+
+// ============================================================================
+// LOGS
+// ============================================================================
+
+export interface LogEntry {
+  id: string;
+  timestamp: string;
+  text: string;
+  risk_level: 'HIGH' | 'MEDIUM' | 'LOW';
+  risk_score: number;
+  intent?: string;
+  ai_generated?: boolean;
+  ai_confidence?: number;
+  intent_confidence?: number;
+  style_score?: number;
+  url_detected?: boolean;
+  domains?: string[];
+  keywords?: string[];
+}
+
+export interface LogsResponse {
+  logs: LogEntry[];
+  count: number;
+}
+
+export const getLogs = (limit: number = 100): Promise<LogsResponse> => {
+  return fetchAPI(`/logs?limit=${limit}`);
+};
+
+// ============================================================================
+// Export all as guardianApi
+// ============================================================================
+
+export const guardianApi = {
+  checkHealth,
+  analyzeText,
+  getStats,
+  createAPIKey,
+  listAPIKeys,
+  deleteAPIKey,
+  getLogs,
+};

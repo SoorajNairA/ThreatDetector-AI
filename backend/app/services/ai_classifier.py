@@ -1,8 +1,16 @@
-from transformers import AutoTokenizer, AutoModelForSequenceClassification
-import torch
+from transformers import AutoTokenizer
 import numpy as np
 import os
 from pathlib import Path
+
+# PyTorch only imported if ONNX fallback needed
+try:
+    from transformers import AutoModelForSequenceClassification
+    import torch
+    PYTORCH_AVAILABLE = True
+except ImportError:
+    PYTORCH_AVAILABLE = False
+    torch = None
 
 # ============================================================================
 # MODEL INITIALIZATION (runs once when module is imported)
@@ -41,27 +49,30 @@ model = None
 device = None
 
 if not use_onnx:
-    # Using RoBERTa-based AI detection model
-    # Options: "roberta-base-openai-detector" (OpenAI's detector)
-    #          "Hello-SimpleAI/chatgpt-detector-roberta" (ChatGPT detector)
-    #          "andreas122001/roberta-base-ai-detector" (Generic AI detector)
-    MODEL_NAME = os.environ.get("AI_DETECTOR_MODEL", "Hello-SimpleAI/chatgpt-detector-roberta")
-    
-    # Device configuration
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    
-    try:
-        tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
-        model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME)
-        model.to(device)
-        model.eval()  # Set to evaluation mode
-        print(f"[OK] RoBERTa AI detector loaded: {MODEL_NAME}")
-        print(f"[OK] Using device: {device}")
-    except Exception as e:
-        print(f"[WARNING] RoBERTa model load failed: {e}")
-        print("  Falling back to heuristic implementation.")
-        tokenizer = None
-        model = None
+    if not PYTORCH_AVAILABLE:
+        print("[WARNING] PyTorch not available and ONNX not found. Using heuristic fallback.")
+    else:
+        # Using RoBERTa-based AI detection model
+        # Options: "roberta-base-openai-detector" (OpenAI's detector)
+        #          "Hello-SimpleAI/chatgpt-detector-roberta" (ChatGPT detector)
+        #          "andreas122001/roberta-base-ai-detector" (Generic AI detector)
+        MODEL_NAME = os.environ.get("AI_DETECTOR_MODEL", "Hello-SimpleAI/chatgpt-detector-roberta")
+        
+        # Device configuration
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        
+        try:
+            tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
+            model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME)
+            model.to(device)
+            model.eval()  # Set to evaluation mode
+            print(f"[OK] RoBERTa AI detector loaded: {MODEL_NAME}")
+            print(f"[OK] Using device: {device}")
+        except Exception as e:
+            print(f"[WARNING] RoBERTa model load failed: {e}")
+            print("  Falling back to heuristic implementation.")
+            tokenizer = None
+            model = None
 else:
     # Load tokenizer for ONNX model
     try:

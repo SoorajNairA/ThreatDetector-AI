@@ -29,12 +29,12 @@ const CustomTooltip = ({ active, payload }: any) => {
 
 const CustomLegend = ({ payload }: any) => {
   return (
-    <div className="flex flex-wrap gap-x-4 gap-y-2 justify-center mt-4">
-      {payload?.map((entry: any, index: number) => (
+    <div className="flex flex-wrap gap-x-4 gap-y-2 justify-center mb-4">
+      {payload?.map((entry: any) => (
         <div key={entry.value} className="flex items-center gap-1.5">
           <div
             className="w-2.5 h-2.5 rounded-full"
-            style={{ backgroundColor: COLORS[index % COLORS.length] }}
+            style={{ backgroundColor: entry.color }}
           />
           <span className="font-mono-display text-xs text-muted-foreground">
             {entry.value}
@@ -57,10 +57,11 @@ const ThreatPieChart = ({ data }: ThreatPieChartProps) => {
       <div className="flex-1 min-h-[280px]">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
+            <Legend content={<CustomLegend />} verticalAlign="top" />
             <Pie
               data={filteredData}
               cx="50%"
-              cy="45%"
+              cy="50%"
               innerRadius={60}
               outerRadius={90}
               paddingAngle={2}
@@ -78,7 +79,6 @@ const ThreatPieChart = ({ data }: ThreatPieChartProps) => {
               ))}
             </Pie>
             <Tooltip content={<CustomTooltip />} />
-            <Legend content={<CustomLegend />} />
           </PieChart>
         </ResponsiveContainer>
       </div>

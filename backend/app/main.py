@@ -7,7 +7,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.logging_config import configure_logging, get_logger
-from app.routes import health, analyze, stats, keys, ml
+from app.routes import health, analyze, stats, keys, ml, logs
 
 # Configure logging
 configure_logging()
@@ -47,6 +47,7 @@ app.include_router(analyze.router)
 app.include_router(stats.router)
 app.include_router(keys.router)
 app.include_router(ml.router)
+app.include_router(logs.router)
 
 
 @app.on_event("startup")

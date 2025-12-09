@@ -16,11 +16,11 @@ logger = get_logger(__name__)
 
 # Ensemble weights for combining classifier scores
 WEIGHTS = {
-    "ai": 0.4,
-    "intent": 0.3,
-    "style": 0.15,
-    "url": 0.1,
-    "keyword": 0.05
+    "ai": 0.35,
+    "intent": 0.35,
+    "style": 0.10,
+    "url": 0.12,
+    "keyword": 0.08
 }
 
 
@@ -152,13 +152,30 @@ async def analyze_threat(
         WEIGHTS["keyword"] * scores["keyword"]
     )
     
+    # Boost risk score when multiple high-risk signals are present
+    high_risk_indicators = 0
+    if results["intent"] in ["phishing", "scam"]:
+        high_risk_indicators += 1
+    if scores["url"] >= 0.8:
+        high_risk_indicators += 1
+    if scores["keyword"] >= 0.8:
+        high_risk_indicators += 1
+    if scores["ai"] >= 0.8:
+        high_risk_indicators += 1
+    
+    # Apply multiplicative boost for multiple indicators
+    if high_risk_indicators >= 3:
+        risk_score = min(1.0, risk_score * 1.15)  # 15% boost, cap at 100%
+    elif high_risk_indicators >= 2:
+        risk_score = min(1.0, risk_score * 1.08)  # 8% boost
+    
     # Determine risk level
-    if risk_score >= 0.8:
-        risk_level = "high"
-    elif risk_score >= 0.5:
-        risk_level = "medium"
+    if risk_score >= 0.7:
+        risk_level = "HIGH"
+    elif risk_score >= 0.4:
+        risk_level = "MEDIUM"
     else:
-        risk_level = "low"
+        risk_level = "LOW"
     
     logger.info(f"Final risk score: {risk_score:.3f} ({risk_level})")
     logger.info(f"Component scores: {scores}")
@@ -183,6 +200,8 @@ async def analyze_threat(
         "actor": "unknown",  # Placeholder - can be extracted from metadata in future
         "user_id": user_id,  # Link to user
         "timestamp": timestamp,
+        "ai_confidence": analysis_result["analysis"].get("ai_confidence", 0.0),
+        "intent_confidence": analysis_result["analysis"].get("intent_confidence", 0.0),
         "style_score": analysis_result["analysis"].get("style_score", 0.0),
         "url_detected": analysis_result["analysis"].get("url_detected", False),
         "domains": analysis_result["analysis"].get("domains", []),
