@@ -9,12 +9,17 @@ WORKDIR /app
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     gcc \
+    g++ \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements first for better layer caching
 COPY requirements.txt .
 
-# Install Python dependencies
+# Install Python dependencies in stages for faster builds
+# Install PyTorch CPU-only version first (smaller & faster)
+RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu
+
+# Install remaining dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
