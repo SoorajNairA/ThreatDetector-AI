@@ -56,6 +56,14 @@ async function fetchAPI<T>(
     headers['Authorization'] = `Bearer ${authToken}`;
   }
   
+  // Debug logging
+  console.log('[API Debug]', {
+    endpoint,
+    hasApiKey: !!apiKey,
+    hasAuthToken: !!authToken,
+    apiKeyPreview: apiKey ? `${apiKey.substring(0, 10)}...` : 'none'
+  });
+  
   const response = await fetch(`${API_URL}${endpoint}`, {
     ...options,
     headers,

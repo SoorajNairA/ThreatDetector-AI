@@ -48,24 +48,21 @@ export const useRealtimeThreats = (userId?: string) => {
 
     loadInitialData();
 
-    // Subscribe to new threats
-    const channel = subscribeToThreats((newThreat) => {
-      setThreats((prev) => [newThreat, ...prev].slice(0, 20));
-      
-      // Update stats
-      setStats((prev) => {
-        if (!prev) return null;
-        const newStats = { ...prev };
-        newStats.total += 1;
-        if (newThreat.risk_level === 'HIGH') newStats.high += 1;
-        if (newThreat.risk_level === 'MEDIUM') newStats.medium += 1;
-        if (newThreat.risk_level === 'LOW') newStats.low += 1;
-        return newStats;
-      });
-    }, userId);
+    // Poll for updates every 2 seconds instead of realtime
+    const pollInterval = setInterval(async () => {
+      try {
+        const recentThreats = await fetchRecentThreats(20, userId);
+        setThreats(recentThreats);
+        
+        const statsData = await getStats();
+        setStats(statsData);
+      } catch (error) {
+        console.error('Polling error:', error);
+      }
+    }, 2000);
 
     return () => {
-      channel?.unsubscribe();
+      clearInterval(pollInterval);
     };
   }, [userId, loadInitialData]);
 

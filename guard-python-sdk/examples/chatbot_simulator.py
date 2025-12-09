@@ -10,7 +10,7 @@ from guard_sdk import GuardClient, GuardError
 
 # Initialize client
 client = GuardClient(
-    api_key="gsp_dteOFskxwwpei5LMuPCJLrQWffCv7asKEt2pKZek53M",
+    api_key="gsp_Jq-mJQFKbCpeWPt7fKcd9oFpmsO9_-8xOQKgFotpD_M",
     base_url="http://localhost:8000"
 )
 

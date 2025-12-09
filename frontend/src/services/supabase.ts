@@ -55,9 +55,14 @@ export const fetchRecentThreats = async (
   limit: number = 10,
   userId?: string
 ): Promise<ThreatRecord[]> => {
-  if (!supabase) return [];
+  if (!supabase) {
+    console.log('[Supabase] Client not configured');
+    return [];
+  }
 
   try {
+    console.log('[Supabase] Fetching threats...', { limit, userId });
+    
     let query = supabase
       .from('threats')
       .select('*')
@@ -70,10 +75,15 @@ export const fetchRecentThreats = async (
 
     const { data, error } = await query;
 
-    if (error) throw error;
+    if (error) {
+      console.error('[Supabase] Query error:', error);
+      throw error;
+    }
+    
+    console.log('[Supabase] Fetched threats:', data?.length || 0);
     return data || [];
   } catch (error) {
-    console.error('Failed to fetch threats:', error);
+    console.error('[Supabase] Failed to fetch threats:', error);
     return [];
   }
 };

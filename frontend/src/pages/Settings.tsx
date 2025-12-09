@@ -95,6 +95,11 @@ const Settings = () => {
     
     setIsLoading(true);
     try {
+      // Debug: Check if user is authenticated
+      console.log('[DEBUG] Creating API key...');
+      console.log('[DEBUG] User:', user);
+      console.log('[DEBUG] Has API key:', !!getApiKey());
+      
       const newKey = await createAPIKey({ name: newKeyName });
       if (newKey.api_key) {
         // Only save to localStorage if no key exists yet (first key)

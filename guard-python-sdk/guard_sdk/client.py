@@ -94,7 +94,7 @@ class GuardClient:
                 raise RateLimitError("Rate limit exceeded. Please try again later.")
             elif response.status_code != 200:
                 error_msg = response.json().get("detail", "Unknown error")
-                raise GuardianError(f"API error: {error_msg}")
+                raise GuardError(f"API error: {error_msg}")
             
             data = response.json()
             return AnalysisResult(data)
