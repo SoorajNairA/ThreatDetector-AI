@@ -88,68 +88,132 @@ Guard Security Platform is a comprehensive threat detection solution using multi
 └── team_info.txt         # Team information
 ```
 
-## Installation & Setup
+## Local Development Setup
 
 ### Prerequisites
 - Python 3.9+
 - Node.js 18+
 - Supabase account (free tier)
-- Git
 
-### Backend Setup
+### Step 1: Backend Setup
 
 ```bash
+# Navigate to backend directory
 cd project/backend
 
-# Create virtual environment
+# Create and activate virtual environment
 python -m venv venv
-source venv/bin/activate  # Linux/Mac
-# venv\Scripts\activate   # Windows
+
+# Activate virtual environment
+# Windows:
+venv\Scripts\activate
+# Linux/Mac:
+source venv/bin/activate
 
 # Install dependencies
 pip install -r requirements.txt
 
-# Configure environment
+# Configure environment variables
 cp .env.example .env
-# Edit .env with your Supabase credentials
+# Edit .env file with your Supabase credentials:
+#   SUPABASE_URL=your_supabase_project_url
+#   SUPABASE_SERVICE_KEY=your_service_role_jwt_token
 
-# Run database migrations in Supabase SQL Editor
-# Execute SQL from migrations/*.sql files
+# Run database migrations
+# Open Supabase SQL Editor and execute migrations in order:
+# 1. migrations/001_accounts_encryption.sql
+# 2. migrations/002_online_learning.sql
+# 3. migrations/003_privacy_training_consent.sql
+# 4. migrations/004_add_confidence_columns.sql
 
-# Start server
-uvicorn app.main:app --reload --port 8000
+# Start backend server
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-Backend will be available at: `http://localhost:8000`  
-API Documentation: `http://localhost:8000/docs`
+**Backend URLs:**
+- API Server: `http://localhost:8000`
+- API Documentation: `http://localhost:8000/docs`
+- Interactive API: `http://localhost:8000/redoc`
 
-### Frontend Setup
+### Step 2: Frontend Setup
 
 ```bash
+# Open new terminal and navigate to frontend directory
 cd project/frontend
 
 # Install dependencies
 npm install
 
-# Configure environment
+# Configure environment variables
 cp .env.example .env
-# Edit .env with API URLs
+# Edit .env file:
+#   VITE_API_URL=http://localhost:8000
+#   VITE_SUPABASE_URL=your_supabase_project_url
+#   VITE_SUPABASE_ANON_KEY=your_anon_jwt_token
 
 # Start development server
 npm run dev
 ```
 
-Frontend will be available at: `http://localhost:5173`
+**Frontend URL:** `http://localhost:8080`
 
-### SDK Usage
+### Step 3: SDK Setup (Optional)
 
 ```bash
+# Navigate to SDK directory
 cd project/sdk
+
+# Install SDK in development mode
 pip install -e .
 
-# Run examples
-python examples/chatbot_simulator.py
+# Run example chatbot simulator
+cd examples
+python chatbot_simulator.py
 ```
+
+### Complete Local Deployment Script
+
+**For Windows (PowerShell):**
+```powershell
+# Terminal 1 - Backend
+cd C:\path\to\.cypher_SIH25161\project\backend
+python -m venv venv
+.\venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+
+# Terminal 2 - Frontend (open new terminal)
+cd C:\path\to\.cypher_SIH25161\project\frontend
+npm install
+npm run dev
+```
+
+**For Linux/Mac (Bash):**
+```bash
+# Terminal 1 - Backend
+cd /path/to/.cypher_SIH25161/project/backend
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+
+# Terminal 2 - Frontend (open new terminal)
+cd /path/to/.cypher_SIH25161/project/frontend
+npm install
+npm run dev
+```
+
+### Verifying Installation
+
+After running both terminals, verify:
+1. Backend API: Open `http://localhost:8000/docs` - should show Swagger UI
+2. Frontend App: Open `http://localhost:8080` - should show landing page
+3. Check terminal outputs for any errors
+
+### Stopping the Application
+
+- **Backend:** Press `Ctrl+C` in backend terminal, then run `deactivate`
+- **Frontend:** Press `Ctrl+C` in frontend terminal
 
 ## Environment Variables
 
@@ -242,33 +306,31 @@ cd project/sdk/examples
 python chatbot_simulator.py
 ```
 
-Features 15 threat scenarios:
+**Simulator includes 15 threat scenarios:**
 - Phishing attacks
 - Prize scams
 - Tech support scams
 - Romance scams
 - Cryptocurrency scams
 - Tax/IRS scams
+- Rental scams
+- Blackmail/extortion
 - And more...
 
-### Backend Tests
+### Run Backend Tests
 ```bash
 cd project/backend
+
+# With virtual environment activated
 pytest tests/ -v
 ```
 
-## Deployment
-
-### Backend 
-1. Connect GitHub repository
-2. Set environment variables
-3. Deploy command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
-
-### Frontend
-1. Connect GitHub repository
-2. Set environment variables
-3. Build command: `npm run build`
-4. Output directory: `dist`
+### Manual Testing via Dashboard
+1. Open frontend at `http://localhost:5173`
+2. Register/login with Supabase credentials
+3. Navigate to "Analyze Text" section
+4. Enter test messages from `sdk/examples/test_messages.txt`
+5. View results in real-time dashboard
 
 ## Architecture Diagrams
 
