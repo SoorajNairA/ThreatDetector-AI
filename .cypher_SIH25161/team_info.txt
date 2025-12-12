@@ -3,12 +3,12 @@ Problem Statement ID: SIH25161
 Team ID: 109414
 
 Members:
-1. Member Name 1 - Institute Name - Team Leader / Backend Developer
-2. Member Name 2 - Institute Name - Frontend Developer
-3. Member Name 3 - Institute Name - ML/AI Engineer
-4. Member Name 4 - Institute Name - Security Specialist
-5. Member Name 5 - Institute Name - UI/UX Designer
-6. Member Name 6 - Institute Name - DevOps Engineer
+1. Kisholega. Y. L - Institute Name - Team Leader / Frontend Developer
+2. Madhav. H - Institute Name - DevOps Engineer
+3. Sooraj Nair. A - Institute Name - Backend Developer
+4. Lina Nashwa - Institute Name - Frontend Developer / Documentation
+5. Glad Anly - Institute Name - UI/UX Designer
+6. Ajul Krishna. A. P - Institute Name - ML/AI Engineer
 
 Project Title: Guard Security Platform - AI-Powered Threat Detection System
 
@@ -16,7 +16,6 @@ Technology Stack:
 - Backend: Python (FastAPI), TensorFlow, scikit-learn, ONNX
 - Frontend: React, TypeScript, Vite, Tailwind CSS
 - Database: Supabase (PostgreSQL)
-- Deployment: Railway/Render (Backend), Vercel (Frontend)
 - Security: AES-128-GCM encryption, bcrypt hashing, JWT authentication
 
 Key Features:
