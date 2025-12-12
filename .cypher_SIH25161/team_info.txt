@@ -26,7 +26,7 @@ Key Features:
 - Online learning for continuous improvement
 - Batch processing and analytics
 
-GitHub Repository: https://github.com/[your-username]/[repository-name]
+GitHub Repository: https://github.com/SoorajNairA/ThreatDetector-AI
 
 Deployment Links:
 - Backend API: [To be added after deployment]
@@ -34,10 +34,8 @@ Deployment Links:
 - API Documentation: [Backend URL]/docs
 
 Contact Information:
-Team Leader Email: [email@example.com]
-Team Leader Phone: [+91-XXXXXXXXXX]
-
-Submission Date: December 12, 2025
+Team Leader Email: kisholega.yl@gmail.com
+Team Leader Phone: [+91-9361381517]
 
 Notes:
 - All source code is included in the project/ directory
