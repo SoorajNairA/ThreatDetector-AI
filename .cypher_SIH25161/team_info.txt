@@ -1,0 +1,53 @@
+Team Name: .cypher
+Problem Statement ID: SIH25161
+Team ID: 109414
+
+Members:
+1. Member Name 1 - Institute Name - Team Leader / Backend Developer
+2. Member Name 2 - Institute Name - Frontend Developer
+3. Member Name 3 - Institute Name - ML/AI Engineer
+4. Member Name 4 - Institute Name - Security Specialist
+5. Member Name 5 - Institute Name - UI/UX Designer
+6. Member Name 6 - Institute Name - DevOps Engineer
+
+Project Title: Guard Security Platform - AI-Powered Threat Detection System
+
+Technology Stack:
+- Backend: Python (FastAPI), TensorFlow, scikit-learn, ONNX
+- Frontend: React, TypeScript, Vite, Tailwind CSS
+- Database: Supabase (PostgreSQL)
+- Deployment: Railway/Render (Backend), Vercel (Frontend)
+- Security: AES-128-GCM encryption, bcrypt hashing, JWT authentication
+
+Key Features:
+- 5 AI classifiers for threat detection (AI text, intent, stylometry, URL, keywords)
+- Real-time threat monitoring dashboard
+- Per-account encryption for data privacy
+- RESTful API with Python SDK
+- Online learning for continuous improvement
+- Batch processing and analytics
+
+GitHub Repository: https://github.com/[your-username]/[repository-name]
+
+Deployment Links:
+- Backend API: [To be added after deployment]
+- Frontend Dashboard: [To be added after deployment]
+- API Documentation: [Backend URL]/docs
+
+Contact Information:
+Team Leader Email: [email@example.com]
+Team Leader Phone: [+91-XXXXXXXXXX]
+
+Submission Date: December 12, 2025
+
+Notes:
+- All source code is included in the project/ directory
+- Complete setup instructions in README.md
+- Environment configuration examples provided
+- Sample test data included in assets/sample_inputs/
+- Database migrations included in backend/migrations/
+- Docker support available for containerized deployment
+
+Declaration:
+This project is our original work developed for Smart India Hackathon 2025.
+All team members have contributed to the development and testing of this solution.
