@@ -6,7 +6,31 @@ Sends various threat patterns to test intent classifier accuracy
 
 import time
 import random
-from guard_sdk import GuardClient, GuardError
+import subprocess
+import sys
+import os
+
+try:
+    from guard_sdk import GuardClient, GuardError
+except ImportError:
+    print("=" * 80)
+    print("ERROR: guard_sdk module not found!")
+    print("=" * 80)
+    print("\nAttempting to install guard_sdk...")
+    print("Running: pip install -e ../../guard-python-sdk")
+    print()
+    
+    try:
+        sdk_path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "-e", sdk_path])
+        print("\n✓ Installation successful! Please run the script again.")
+    except subprocess.CalledProcessError as e:
+        print(f"\n✗ Installation failed: {e}")
+        print("\nPlease manually install the SDK:")
+        print("  cd guard-python-sdk")
+        print("  pip install -e .")
+    
+    sys.exit(1)
 
 # Initialize client
 client = GuardClient(

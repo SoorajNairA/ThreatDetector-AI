@@ -1,0 +1,182 @@
+# Test Messages for Guardian Threat Classifier
+# Ranging from HIGH to LOW threat levels
+
+## HIGH THREAT - Phishing with URLs (Score: 0.85-0.95)
+
+URGENT! Your account has been compromised. Click here immediately to verify your identity and prevent permanent suspension: http://bit.ly/secure-verify
+
+Your PayPal account will be locked in 24 hours! Verify now: http://paypal-security.tk/verify?id=urgent
+
+FINAL NOTICE: Your bank account shows suspicious activity. Login here to confirm your identity: https://chase-verify.com/account
+
+Amazon Security Alert! Someone tried to login from Russia. Confirm your password immediately: http://amzn-secure.co/reset
+
+Your Apple ID has been disabled. Click to restore access: http://apple-id-verify.net/unlock
+
+## HIGH THREAT - Financial Scams (Score: 0.80-0.90)
+
+Congratulations! You won $1,000,000 in our international lottery! Send your bank account number and SSN to claim your prize now!
+
+I'm a Nigerian prince with $50 million. Help me transfer funds and receive 30% commission. Send your banking details immediately.
+
+You've been selected for a $5000 government stimulus check! Provide your social security number, bank account, and routing number to receive payment.
+
+INHERITANCE NOTICE: You've inherited $2.5 million from a distant relative. Pay $500 processing fee to receive funds.
+
+You won a free iPhone 15 Pro Max! Just pay $29.99 shipping and provide your credit card information.
+
+## HIGH THREAT - Account Takeover (Score: 0.75-0.85)
+
+Your Microsoft account password has expired. Update it now or lose access: enter your current password and new password here.
+
+Google Security: Unusual login detected. Verify your email password immediately to prevent account closure.
+
+Netflix: Your payment failed. Update your credit card information now to avoid service interruption: provide card number, CVV, and expiration.
+
+Urgent: Your email will be deleted in 48 hours. Confirm your password to keep your account active.
+
+LinkedIn: Someone is trying to access your account. Click here and enter your login credentials to secure it.
+
+## MEDIUM-HIGH THREAT - Tech Support Scams (Score: 0.65-0.75)
+
+WARNING: Your computer is infected with 37 viruses! Call this number immediately: 1-800-FAKE-TECH. Do not turn off your PC!
+
+Microsoft Security Alert: Critical threat detected on your Windows system. Download this tool now to remove malware.
+
+Your antivirus subscription expired! Renew now for $299.99 or your data will be at risk. Click here to pay.
+
+McAfee Alert: Your protection is disabled. Call 1-888-555-0000 to speak with a technician and reactivate.
+
+System Warning: Suspicious activity detected. Install this security update immediately to protect your files.
+
+## MEDIUM-HIGH THREAT - Cryptocurrency Scams (Score: 0.65-0.75)
+
+Amazing investment opportunity! Double your Bitcoin in just 7 days guaranteed! Send BTC to wallet: 1FakeAddress123ABC
+
+Elon Musk is giving away 10,000 ETH! Send 1 ETH to this address and receive 10 ETH back: 0xFakeWallet456
+
+Join our crypto trading bot with 99% success rate! Minimum investment $1000 in Bitcoin. Limited spots available!
+
+I made $50,000 in one week with this secret crypto strategy! Send me $500 and I'll share the method with you.
+
+You've been selected for our exclusive crypto presale! Send 0.5 BTC now and receive 100x returns when we launch!
+
+## MEDIUM THREAT - Romance Scams (Score: 0.55-0.65)
+
+I feel such a deep connection with you even though we just met online. I think I'm falling in love with you.
+
+I'm stuck in Turkey and my wallet was stolen. Can you send me $2000? I'll pay you back as soon as I get home, I promise.
+
+I want to visit you so badly but I can't afford the plane ticket. Could you wire me $1500? You're the love of my life.
+
+My mother is sick and needs surgery urgently. I need $3000 for medical bills. Please help me, I have nobody else.
+
+I invested all my money in a business opportunity and it failed. Can you lend me $5000? I'll marry you when I see you.
+
+## MEDIUM THREAT - Job Scams (Score: 0.55-0.65)
+
+Congratulations! You've been selected for a work-from-home position earning $5000/week! Send $200 for training materials.
+
+Easy money! Be a package forwarding agent. Receive packages at your address and ship them internationally. No experience needed!
+
+You're hired as a mystery shopper! Cash this $3000 check, keep $500, and wire the rest back to evaluate our money transfer service.
+
+Data entry job - $40/hour working from home! Just provide your SSN and bank account for direct deposit setup.
+
+Become a payment processing agent! Receive funds in your account and forward 90% to us. Keep 10% as commission!
+
+## MEDIUM THREAT - Fake Shipping/Delivery (Score: 0.50-0.60)
+
+FedEx: Your package delivery failed. Click here to reschedule: http://fedex-tracking.net/redeliver
+
+USPS: Package held at customs. Pay $4.99 fee to release your shipment: provide credit card details.
+
+DHL: Unable to deliver your package. Update your address and pay $3.50 redelivery fee here.
+
+Your Amazon order #12345 cannot be delivered. Verify your payment information to complete delivery.
+
+UPS: Package waiting for pickup. Click here and provide ID verification to claim your delivery.
+
+## MEDIUM-LOW THREAT - Prize/Survey Scams (Score: 0.45-0.55)
+
+You've been selected to test the new iPhone 16! Just pay $19.99 shipping and handling to receive your free device.
+
+Take our 5-minute survey and receive a $100 Walmart gift card! Provide your email and phone number to claim.
+
+Congratulations! You're our 1,000,000th visitor! Click here to claim your prize: iPad, MacBook, or $5000 cash!
+
+You've won a free vacation to Hawaii! Just attend our 90-minute timeshare presentation to claim your trip.
+
+Get a free $500 Amazon gift card! Complete this survey and enter your credit card for verification (no charge).
+
+## MEDIUM-LOW THREAT - Aggressive Marketing (Score: 0.40-0.50)
+
+LIMITED TIME OFFER! Act now or miss out forever! Only 3 spots left at this price! Click here immediately!
+
+Your exclusive discount expires in 1 hour! Buy now or lose this deal! 90% OFF - Never available again!
+
+URGENT: Stock running out! Last chance to order! Don't let your friends get this before you!
+
+This offer ends at midnight! Don't be the only one missing out! Everyone is buying this! ORDER NOW!
+
+Flash sale! Only for the next 30 minutes! If you don't act now, you'll regret it forever!
+
+## LOW THREAT - Spam/Marketing (Score: 0.25-0.35)
+
+Unsubscribe here if you no longer wish to receive our promotional emails. Special offer: 50% off all items this weekend.
+
+Sign up for our newsletter and get 10% off your first purchase. Free shipping on orders over $50.
+
+We noticed you abandoned your cart. Complete your order now and save 15% with code SAVE15.
+
+Check out our new collection! Summer sale starts today. Click here to browse the latest styles.
+
+You're invited to join our exclusive membership program. Enjoy early access to sales and special discounts.
+
+## LOW THREAT - Normal Business (Score: 0.15-0.25)
+
+Thank you for your order #67890. Your package has been shipped and will arrive in 3-5 business days. Track here: [tracking link]
+
+Your subscription renews on January 15th. If you'd like to make changes, visit your account settings.
+
+We've received your inquiry and will respond within 24 hours. Reference number: SUP-12345
+
+Your appointment is confirmed for Thursday, December 12th at 2:00 PM. Reply CANCEL to cancel.
+
+Receipt for your purchase: 1x Coffee Maker ($49.99). Total: $54.48. Thank you for shopping with us!
+
+## LOW THREAT - Personal Messages (Score: 0.10-0.20)
+
+Hey! Want to grab coffee this weekend? Let me know what time works for you.
+
+Just checking in to see how you're doing. Hope everything is going well with your new job!
+
+Thanks for your help yesterday. I really appreciate you taking the time to explain everything.
+
+Looking forward to the meeting tomorrow at 3pm. I'll bring the documents we discussed.
+
+Happy birthday! Hope you have an amazing day. Let's celebrate this weekend!
+
+## VERY LOW THREAT - Casual Chat (Score: 0.05-0.15)
+
+How are you today? The weather is really nice, perfect for a walk.
+
+Did you watch the game last night? That last-minute goal was incredible!
+
+I'm thinking of getting pizza for dinner. What toppings do you like?
+
+The movie starts at 7:30. Should I pick you up at 7?
+
+Have a great day! See you later at the office.
+
+## MINIMAL THREAT - Professional Communication (Score: 0.00-0.10)
+
+Per our discussion, please find attached the quarterly report. Let me know if you have any questions.
+
+The project deadline has been extended to Friday. Please submit your section by Thursday EOD.
+
+Meeting agenda for tomorrow: 1) Budget review 2) Timeline updates 3) Resource allocation
+
+Thank you for your presentation. The team found your insights very valuable.
+
+Please review the attached document and provide feedback by the end of the week.

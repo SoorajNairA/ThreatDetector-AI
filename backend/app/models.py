@@ -1,18 +1,16 @@
-"""Pydantic models and schemas"""
 from pydantic import BaseModel, Field
 from typing import Optional, Dict, Any, List
 from datetime import datetime
 
 
 class AnalyzeRequest(BaseModel):
-    """Request model for /analyze endpoint"""
     text: str = Field(..., description="Text content to analyze")
+    actor: Optional[str] = Field(None, description="Optional actor/user identifier")
     metadata: Optional[Dict[str, Any]] = Field(None, description="Optional metadata")
     sandbox: Optional[bool] = Field(False, description="If true, results won't be stored")
 
 
 class AnalysisDetail(BaseModel):
-    """Detailed analysis breakdown"""
     ai_generated: bool
     ai_confidence: float
     human_confidence: float
@@ -27,7 +25,6 @@ class AnalysisDetail(BaseModel):
 
 
 class AnalyzeResponse(BaseModel):
-    """Response model for /analyze endpoint"""
     risk_level: str = Field(..., description="Risk level: HIGH, MEDIUM, or LOW")
     risk_score: float = Field(..., description="Computed risk score between 0 and 1")
     analysis: AnalysisDetail
@@ -36,12 +33,10 @@ class AnalyzeResponse(BaseModel):
 
 
 class HealthResponse(BaseModel):
-    """Response model for /health endpoint"""
     status: str
 
 
 class StatsResponse(BaseModel):
-    """Response model for /stats endpoint"""
     total: int
     high: int
     medium: int

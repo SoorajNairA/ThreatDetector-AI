@@ -1,19 +1,12 @@
-"""
-Guardian Security Platform - Main FastAPI Application
-
-This is the entry point for the threat detection backend service.
-"""
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.logging_config import configure_logging, get_logger
 from app.routes import health, analyze, stats, keys, ml, logs
 
-# Configure logging
 configure_logging()
 logger = get_logger(__name__)
 
-# Create FastAPI application
 app = FastAPI(
     title="Guardian Security Platform",
     description="Backend API for real-time threat detection and analysis",
@@ -22,7 +15,6 @@ app = FastAPI(
     redoc_url="/redoc"
 )
 
-# Configure CORS
 allowed_origins = [
     settings.FRONTEND_ORIGIN,
     "http://localhost:3000",  # Always allow localhost for development
@@ -30,7 +22,6 @@ allowed_origins = [
 ]
 
 if settings.APP_ENV == "dev":
-    # In development, be more permissive
     allowed_origins.append("*")
 
 app.add_middleware(
@@ -41,7 +32,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include routers
 app.include_router(health.router)
 app.include_router(analyze.router)
 app.include_router(stats.router)
@@ -52,7 +42,6 @@ app.include_router(logs.router)
 
 @app.on_event("startup")
 async def startup_event():
-    """Execute on application startup"""
     logger.info("=" * 60)
     logger.info("Guardian Security Platform - Starting Up")
     logger.info(f"Environment: {settings.APP_ENV}")
@@ -64,7 +53,6 @@ async def startup_event():
 
 @app.on_event("shutdown")
 async def shutdown_event():
-    """Execute on application shutdown"""
     logger.info("Guardian Security Platform - Shutting Down")
 
 

@@ -267,7 +267,7 @@ const Index = () => {
                 value={testText}
                 onChange={(e) => setTestText(e.target.value)}
                 placeholder="Enter text to analyze..."
-                className="min-h-[240px] bg-secondary/30 border-border/50 focus:border-primary/50 font-mono text-sm mb-3"
+                className="min-h-[240px] bg-secondary/30 border-border/50 focus:border-primary/50 font-mono text-sm mb-3 !text-white"
               />
               <div className="flex items-center justify-between">
                 <div className="text-xs text-muted-foreground">
@@ -338,7 +338,7 @@ const Index = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
           {/* Live Line Graph */}
           <div className="lg:col-span-8">
-            <LiveLineGraph baseValue={threatLevel} isLive={!isLoading} />
+            <LiveLineGraph baseValue={threatLevel} isLive={!isLoading} threats={threats} />
           </div>
 
           {/* Speedometer */}

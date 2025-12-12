@@ -16,43 +16,89 @@ interface DataPoint {
 interface LiveLineGraphProps {
   baseValue?: number;
   isLive?: boolean;
+  threats?: Array<{ timestamp: string; risk_score: number; id?: string }>;
 }
 
-const LiveLineGraph = ({ baseValue = 50, isLive = true }: LiveLineGraphProps) => {
+const LiveLineGraph = ({ baseValue = 50, isLive = true, threats = [] }: LiveLineGraphProps) => {
   const [data, setData] = useState<DataPoint[]>([]);
+  const [currentValue, setCurrentValue] = useState(0);
+  const [targetValue, setTargetValue] = useState(0);
   const timeRef = useRef(0);
+  const lastThreatIdRef = useRef<string | null>(null);
+  const lastUpdateTimeRef = useRef<number>(Date.now());
 
   useEffect(() => {
-    // Initialize with some data
     const initialData: DataPoint[] = [];
+    const recentThreats = threats.slice(0, 30).reverse();
+    
     for (let i = 0; i < 30; i++) {
-      initialData.push({
-        time: i,
-        value: baseValue + (Math.random() - 0.5) * 20,
-      });
+      if (i < recentThreats.length) {
+        initialData.push({
+          time: i,
+          value: recentThreats[i].risk_score * 100,
+        });
+      } else {
+        initialData.push({
+          time: i,
+          value: 0,
+        });
+      }
     }
     setData(initialData);
+    const initialValue = recentThreats.length > 0 ? recentThreats[recentThreats.length - 1].risk_score * 100 : 0;
+    setCurrentValue(initialValue);
+    setTargetValue(initialValue);
     timeRef.current = 30;
-  }, [baseValue]);
+    
+    if (threats.length > 0) {
+      lastThreatIdRef.current = threats[0].id || threats[0].timestamp;
+      lastUpdateTimeRef.current = Date.now();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (threats.length === 0) return;
+
+    const latestThreat = threats[0];
+    const latestId = latestThreat.id || latestThreat.timestamp;
+
+    if (latestId !== lastThreatIdRef.current) {
+      const newValue = latestThreat.risk_score * 100;
+      setTargetValue(newValue);
+      lastThreatIdRef.current = latestId;
+      lastUpdateTimeRef.current = Date.now();
+    }
+  }, [threats]);
 
   useEffect(() => {
     if (!isLive) return;
 
     const interval = setInterval(() => {
       setData((prev) => {
+        const timeSinceUpdate = (Date.now() - lastUpdateTimeRef.current) / 1000;
+        
+        const decayRate = 0.05;
+        const decayedTarget = targetValue * Math.exp(-decayRate * timeSinceUpdate);
+        
+        setCurrentValue(prev => {
+          const diff = decayedTarget - prev;
+          return prev + diff * 0.3;
+        });
+        
+        setTargetValue(decayedTarget);
+        
         const newPoint = {
           time: timeRef.current,
-          value: baseValue + (Math.random() - 0.5) * 25 + Math.sin(timeRef.current * 0.1) * 10,
+          value: currentValue + (Math.random() - 0.5) * 3,
         };
         timeRef.current += 1;
         
-        const updated = [...prev.slice(-29), newPoint];
-        return updated;
+        return [...prev.slice(-29), newPoint];
       });
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [baseValue, isLive]);
+  }, [isLive, currentValue, targetValue]);
 
   const minValue = Math.min(...data.map(d => d.value), 0);
   const maxValue = Math.max(...data.map(d => d.value), 100);
