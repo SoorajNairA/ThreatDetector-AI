@@ -259,12 +259,12 @@ pytest tests/ -v
 
 ## Deployment
 
-### Backend (Railway/Render)
+### Backend 
 1. Connect GitHub repository
 2. Set environment variables
 3. Deploy command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
 
-### Frontend (Vercel)
+### Frontend
 1. Connect GitHub repository
 2. Set environment variables
 3. Build command: `npm run build`

@@ -34,9 +34,8 @@ Guard Security Platform is a comprehensive threat detection solution using multi
 - **Routing:** React Router
 
 ### Infrastructure
-- **Deployment:** Railway/Render (Backend), Vercel (Frontend)
 - **Authentication:** Supabase Auth + JWT
-- **Real-time:** Supabase Realtime subscriptions
+- **Real-time:** Supabase Realtime 
 
 ## Key Features
 
@@ -259,12 +258,12 @@ pytest tests/ -v
 
 ## Deployment
 
-### Backend (Railway/Render)
+### Backend
 1. Connect GitHub repository
 2. Set environment variables
 3. Deploy command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
 
-### Frontend (Vercel)
+### Frontend
 1. Connect GitHub repository
 2. Set environment variables
 3. Build command: `npm run build`
